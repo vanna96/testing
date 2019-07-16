@@ -3,12 +3,14 @@ import thunk from 'redux-thunk'
 import userReducer from './reducers/userReducer'
 import otherReducer from './reducers/otherReducer'
 import roadReducer from './reducers/roadReducer'
+import filterRoadReducer from './reducers/filterRoadReducer';
 
-const allReducers = combineReducers({user:userReducer,other:otherReducer,road:roadReducer})
+const allReducers = combineReducers({user:userReducer,other:otherReducer,road:roadReducer, filter:filterRoadReducer})
 const InitialStates = {
     user:{name:"Rony",list:[]},
     other:{name:'Por'},
-    road:{roads:[]}
+    road:{roads:[]},
+    filter:{roads:[]}
 }
 
 const middleware = [thunk]

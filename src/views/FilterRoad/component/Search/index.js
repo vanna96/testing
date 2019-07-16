@@ -1,95 +1,110 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
+import Typography from '@material-ui/core/Typography';
 import Select from '@material-ui/core/Select';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import SearchIcon from '@material-ui/icons/Search';
+import IconButton from '@material-ui/core/IconButton';
+import DirectionsIcon from '@material-ui/icons/Directions';
+import Divider from '@material-ui/core/Divider';
+import arraySort from 'array-sort';
+import {connect} from 'react-redux';
 
-const useStyles = makeStyles(theme => ({
-    root: {
-        display: 'flex',
-        flexWrap: 'wrap',
-    },
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-        width: '96%'
-    },
-    selectEmpty: {
-        marginTop: theme.spacing(2),
-    },
-    paper: {
-        padding: theme.spacing(2),
-        textAlign: 'center',
-        color: theme.palette.text.secondary,
-    },
-    button: {
-        marginTop: '16px'
-    },
-}));
+import {search_roads} from '../../../../store/actions/filterRoadAction';
+import communes from '../../../../componentV/Address/Communes';
+import districts from '../../../../componentV/Address/Disticts';
+import {useStyles} from './styles';
 
-export default function SimpleSelect() {
-  const classes = useStyles();
-  return (
-    <form className={classes.root} autoComplete="off">
-        <h3 style={{margin: '8px'}}>Search</h3>
-        <Grid container spacing={3}>
-            <Grid item xs={12} md={2} lg={2}>
-                <FormControl className={classes.formControl}>
-                    <InputLabel>
-                        Districts
-                    </InputLabel>
-                    <Select
-                    displayEmpty
-                    name="age"
-                    className={classes.selectEmpty}
-                    >
-                    <MenuItem value="">
-                        <em>None</em>
-                    </MenuItem>
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
-                    </Select>
-                </FormControl>
-            </Grid>
-            <Grid item xs={12} md={2} lg={2}>
-                <FormControl className={classes.formControl}>
-                    <InputLabel>
-                        Communes
-                    </InputLabel>
-                    <Select
-                    displayEmpty
-                    name="age"
-                    className={classes.selectEmpty}
-                    >
-                    <MenuItem value="">
-                        <em>None</em>
-                    </MenuItem>
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
-                    </Select>
-                </FormControl>
-            </Grid>
-            <Grid item xs={12} md={2} lg={2}>
-                <FormControl  className={classes.formControl}>
-                    <InputLabel htmlFor="adornment-amount">Street</InputLabel>
-                        <Input
-                        startAdornment={<InputAdornment position="start">#</InputAdornment>}
-                    />
-                </FormControl>
-            </Grid>
-            <Grid item xs={12} md={2} lg={2}>
-                <Button variant="contained" color="primary" className={classes.button}>
-                    Search
-                </Button>
-            </Grid>     
-        </Grid>
-    </form>
-  );
+const SearchBar = ({onSearch, search_roads}) => {
+    const classes = useStyles();
+    const [address, setAddress] = React.useState({
+        districts, 
+        communes
+    });
+    const [selected, setSelected] = React.useState({
+        district:'',
+        commune:''
+    });
+
+    const districtsList = arraySort(address.districts,'_name_en').map( ({_code, _name_kh, _name_en}) => <MenuItem key={_code} value={_code}>{_name_en} - {_name_kh} </MenuItem> );
+    const communesList = arraySort(address.communes,'_name_en').map( ({_code, _name_kh, _name_en}) => <MenuItem key={_code} value={_code}>{_name_en} - {_name_kh} </MenuItem> );
+
+
+    const handleChange = (e) => {
+        setSelected({...selected,commune:'', [e.target.name]: e.target.value})
+    }
+    
+    React.useEffect(() => {
+        const start = selected.district.padEnd(6,'0')
+        const end = selected.district.padEnd(6,'9')
+     
+        const communesFilter =  communes.filter(({_code}) =>  (parseInt(_code)>=parseInt(start) &&  parseInt(_code)<=parseInt(end)     )  );
+        setAddress({...address, communes: communesFilter})
+ 
+    }, [selected.district]);
+    return (
+        <Paper className={classes.root} style={{overflow: 'auto'}}>
+            <Typography className={classes.search}>Search</Typography>
+            <Select
+                name="district"
+                value={selected.district}
+                displayEmpty
+                onChange={handleChange}
+                >
+                <MenuItem value="" disabled>Choose District</MenuItem>
+                {districtsList}
+            </Select>
+            <Select
+                name="commune"
+                value={selected.commune}
+                displayEmpty
+                className={classes.margin}
+                onChange={handleChange}
+                >
+                <MenuItem value="" disabled>Choose Communes</MenuItem>
+                {communesList}
+            </Select>
+            <IconButton onClick={() => onSearch({
+                address_id:selected.commune == ''? selected.district:selected.commune
+                }) }>
+                <SearchIcon/>
+            </IconButton>
+            <Divider className={classes.divider} />
+            <Typography className={classes.search}>Filter</Typography>
+            <TextField
+                className={classes.textField}
+                defaultValue=""
+                className={classes.margin}
+                placeholder="Min price"
+            />
+            <TextField
+                className={classes.textField}
+                defaultValue=""
+                className={classes.margin}
+                placeholder="Max price"
+            />
+            {/* <TextField
+                className={classes.textField}
+                defaultValue=""
+                className={classes.margin}
+                placeholder="Distance"
+            /> */}
+            <TextField
+                className={classes.textField}
+                defaultValue=""
+                className={classes.margin}
+                placeholder="Get Top"
+            />
+            <IconButton>
+                <DirectionsIcon/>
+            </IconButton>
+        </Paper>
+    );
 }
+
+const mapDispatchToProps = {
+    onSearch:search_roads
+}
+
+export default connect(null, mapDispatchToProps)(SearchBar);
