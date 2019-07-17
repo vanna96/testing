@@ -18,10 +18,6 @@ export const useStyles = makeStyles(theme => ({
         height: 28,
         margin: 4,
     },
-    textField: {
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
-    },
     margin:{
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),

@@ -2,6 +2,11 @@ import API from '../../libraries/API';
 
 export const SEARCH_ROAD = 'SEARCH_ROAD';
 export const TOGGLE_ROAD = 'TOGGLE_ROAD';
+export const UPDATE_ROAD = 'UPDATE_ROAD';
+export const FILTER_ROAD = 'FILTER_ROAD';
+export const FILTER_GET_TOP = 'FILTER_GET_TOP';
+export const FILTER_DISTANCE = 'FILTER_DISTANCE';
+
 
 const  getRandomColor = () => {
   var letters = '0123456789ABCDEF';
@@ -19,7 +24,7 @@ export const search_roads = data => {
             dispatch(fetchRoadSuccess(response.data.data))
           })
           .catch(error => {
-            //  throw(error);
+             throw(error);
           });
     };
 };
@@ -31,9 +36,38 @@ export const fetchRoadSuccess =  (data) => {
    }
 };
 
-export function toggle_road(index){ 
+export const toggle_road = (index) => { 
     return {
         type:TOGGLE_ROAD,
         payload:index
     }
+}
+
+export const update_road = (data) => {
+  API.put(`/roads/${data.id}`,data).then();
+  return {
+      type:UPDATE_ROAD,
+      payload:data
+  }
+}
+
+export const filter_roads = (data) => {
+    return {
+        type:FILTER_ROAD,
+        payload:data
+    }
+}
+
+export const filter_distance = (data) => {
+    return {
+        type:FILTER_DISTANCE,
+        payload:data
+    }   
+}
+
+export const filter_getTop = (data) => {
+    return {
+        type:FILTER_GET_TOP,
+        payload:data
+    }  
 }

@@ -5,63 +5,58 @@ import {
 import decodePolyline from 'decode-google-map-polyline';
 import GoogleMapEX from '../../../../componentV/Map';
 import {connect} from 'react-redux';
+import {update_road} from '../../../../store/actions/filterRoadAction';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 var roads = [];
-const  PolylineEX = ({roads:poly}) => {
+const  PolylineEX = ({roads:poly, onUpdateRoad}) => {
     const polyRef = React.useRef([]);
-    const [open, setOpen] = React.useState({
-        open:false
-    })
     var center = poly.length==0 ? {lat:11.57260272071095,lng:104.8977114117776}:decodePolyline(poly[0].polylines)[0];
     const handlePLChange = (id) => {
-        // const {el} = polyRef.current.find(p => p.id==id);
-        // console.log([el.props.value, el.getPath()]);
-        // console.log(el.getPath());
         
-        // const encodeString = window.google.maps.geometry.encoding.encodePath(el.getPath());
-        // console.log(encodeString);
-        // const polyLengthInMeters = window.google.maps.geometry.spherical.computeLength(el.getPath().getArray());
+        const {el} = polyRef.current.find(p => p.id==id);
+        
+        const encodeString = window.google.maps.geometry.encoding.encodePath(el.getPath());
+        
+        const polyLengthInMeters = window.google.maps.geometry.spherical.computeLength(el.getPath().getArray());
 
-        // onUpdateRoad({id,polylines:encodeString,distance:Math.round(polyLengthInMeters)})
+        onUpdateRoad({id,polylines:encodeString,distance:Math.round(polyLengthInMeters)});
         
     }
-    const handleClick = () => {
-        setOpen({
-            open:true
-        })
-    }
-    if(poly.length > 0 ){
-            roads = poly.map((poly, index) => {                
-                if(poly.active){
-                    const polyline = decodePolyline(poly.polylines);
-                    const {id} = poly
-                    return( 
-                        <Polyline
-                            value={poly}
-                            key={id}
-                            path={polyline}
-                            options={{
-                                strokeColor: poly.color,
-                                strokeWeight: 12,
-                                editable: true,
-                                draggable:true,
-                                
-                            }}
-                            ref = { el => polyRef.current[index] = {id,el} }
-                            onMouseUp={ () => handlePLChange(id) }
-                            onClick={ ()=>handleClick(id) }
-                        />
-                    )
-                }
+    
+    roads = poly.map((poly, index) => {                
+            if(poly.active){
+                const polyline = decodePolyline(poly.polylines);
+                const {id} = poly
+                return( 
+                    <Polyline
+                        value={poly}
+                        key={id}
+                        path={polyline}
+                        options={{
+                            strokeColor: poly.color,
+                            strokeWeight: 12,
+                            editable: false,
+                            draggable:false,
+                            
+                        }}
+                        ref = { el => polyRef.current[index] = {id,el} }
+                        onMouseUp={ () => handlePLChange(id) }
+                    />
+                )
             }
-        );
-    }
-    
-    
+    });
+
     return(
         <div>
+            {/* <CircularProgress style={{
+                position: 'fixed',
+                zIndex: '9',
+                left: '50%',
+                top: '50%'}}/> */}
             <GoogleMapEX lat={center.lat} lng={center.lng}>
-                {roads}
+                {roads}                
             </GoogleMapEX>
         </div>
     );
@@ -73,4 +68,8 @@ const mapStateToProps = state => {
     }
 };
 
-export default connect(mapStateToProps, null)(PolylineEX)
+const mapDispatchToProps = {
+    onUpdateRoad:update_road
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PolylineEX)

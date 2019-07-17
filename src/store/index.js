@@ -10,7 +10,7 @@ const InitialStates = {
     user:{name:"Rony",list:[]},
     other:{name:'Por'},
     road:{roads:[]},
-    filter:{roads:[]}
+    filter:{roads:[], newRoads:[] }
 }
 
 const middleware = [thunk]

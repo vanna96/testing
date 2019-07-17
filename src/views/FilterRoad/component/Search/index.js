@@ -3,7 +3,6 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
 import IconButton from '@material-ui/core/IconButton';
 import DirectionsIcon from '@material-ui/icons/Directions';
@@ -11,12 +10,12 @@ import Divider from '@material-ui/core/Divider';
 import arraySort from 'array-sort';
 import {connect} from 'react-redux';
 
-import {search_roads} from '../../../../store/actions/filterRoadAction';
+import {search_roads, filter_roads,filter_distance,filter_getTop} from '../../../../store/actions/filterRoadAction';
 import communes from '../../../../componentV/Address/Communes';
 import districts from '../../../../componentV/Address/Disticts';
 import {useStyles} from './styles';
 
-const SearchBar = ({onSearch, search_roads}) => {
+const SearchBar = ({onSearch, onFilterPrice, onFilterGetTop, onFilterDistance}) => {
     const classes = useStyles();
     const [address, setAddress] = React.useState({
         districts, 
@@ -24,7 +23,11 @@ const SearchBar = ({onSearch, search_roads}) => {
     });
     const [selected, setSelected] = React.useState({
         district:'',
-        commune:''
+        commune:'',
+        price:'',
+        distance:'',
+        get_top:''
+        
     });
 
     const districtsList = arraySort(address.districts,'_name_en').map( ({_code, _name_kh, _name_en}) => <MenuItem key={_code} value={_code}>{_name_en} - {_name_kh} </MenuItem> );
@@ -32,7 +35,7 @@ const SearchBar = ({onSearch, search_roads}) => {
 
 
     const handleChange = (e) => {
-        setSelected({...selected,commune:'', [e.target.name]: e.target.value})
+        setSelected({...selected, [e.target.name]: e.target.value})
     }
     
     React.useEffect(() => {
@@ -43,6 +46,29 @@ const SearchBar = ({onSearch, search_roads}) => {
         setAddress({...address, communes: communesFilter})
  
     }, [selected.district]);
+
+    React.useEffect(() => {
+        onFilterPrice(selected.price)
+        if(selected.get_top){
+            onFilterGetTop(selected.get_top)      
+        }  
+    }, [selected.price]);
+
+    React.useEffect(() => {
+        onFilterDistance(selected.distance)
+        if(selected.get_top){
+            onFilterGetTop(selected.get_top)      
+        }
+    }, [selected.distance]);
+
+    React.useEffect(() => {
+        if(selected.price){
+            onFilterPrice(selected.price)
+        }
+        onFilterGetTop(selected.get_top)      
+    }, [selected.get_top]);
+
+
     return (
         <Paper className={classes.root} style={{overflow: 'auto'}}>
             <Typography className={classes.search}>Search</Typography>
@@ -67,36 +93,50 @@ const SearchBar = ({onSearch, search_roads}) => {
             </Select>
             <IconButton onClick={() => onSearch({
                 address_id:selected.commune == ''? selected.district:selected.commune
-                }) }>
+                }) }
+                color="primary">
                 <SearchIcon/>
             </IconButton>
             <Divider className={classes.divider} />
             <Typography className={classes.search}>Filter</Typography>
-            <TextField
-                className={classes.textField}
-                defaultValue=""
+            <Select
+                name="price"
+                value={selected.price}
+                displayEmpty
                 className={classes.margin}
-                placeholder="Min price"
-            />
-            <TextField
-                className={classes.textField}
-                defaultValue=""
+                onChange={handleChange}
+                >
+                <MenuItem value="" disabled>Filter by Price</MenuItem>
+                <MenuItem value="ASC" > Low to High </MenuItem>
+                <MenuItem value="DESC" > High to Low</MenuItem>
+            </Select>
+            <Select
+                name="distance"
+                value={selected.distance}
+                displayEmpty
                 className={classes.margin}
-                placeholder="Max price"
-            />
-            {/* <TextField
-                className={classes.textField}
-                defaultValue=""
+                onChange={handleChange}
+                >
+                <MenuItem value="" disabled>Filter by Distance</MenuItem>
+                <MenuItem value="ASC" > A-Z </MenuItem>
+                <MenuItem value="DESC" > Z-A </MenuItem>
+            </Select>
+            <Select
+                name="get_top"
+                value={selected.get_top}
+                displayEmpty
                 className={classes.margin}
-                placeholder="Distance"
-            /> */}
-            <TextField
-                className={classes.textField}
-                defaultValue=""
-                className={classes.margin}
-                placeholder="Get Top"
-            />
-            <IconButton>
+                onChange={handleChange}
+                >
+                <MenuItem value="" disabled>Filter by Top</MenuItem>
+                <MenuItem value="5" > Top 5 records</MenuItem>
+                <MenuItem value="10" > Top 10 records</MenuItem>
+                <MenuItem value="15" > Top 15 records</MenuItem>
+                <MenuItem value="25" > Top 25 records</MenuItem>
+                <MenuItem value="50" > Top 50 records</MenuItem>
+                <MenuItem value="100" > Top 100 records</MenuItem>
+            </Select>
+            <IconButton color="primary" >
                 <DirectionsIcon/>
             </IconButton>
         </Paper>
@@ -104,7 +144,10 @@ const SearchBar = ({onSearch, search_roads}) => {
 }
 
 const mapDispatchToProps = {
-    onSearch:search_roads
+    onSearch:search_roads,
+    onFilterPrice:filter_roads,
+    onFilterDistance:filter_distance,
+    onFilterGetTop:filter_getTop
 }
 
 export default connect(null, mapDispatchToProps)(SearchBar);

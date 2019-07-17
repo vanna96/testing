@@ -9,6 +9,7 @@ import Switch from '@material-ui/core/Switch';
 import Divider from "@material-ui/core/Divider";
 import {connect} from 'react-redux';
 import {toggle_road} from '../../../../store/actions/filterRoadAction';
+import numeral from 'numeral'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -18,20 +19,20 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const  Sidebar = ({roads, onToggleRoad}) => {
+const  Sidebar = ({roads, onToggleRoad}) => {    
     const classes = useStyles();
     const roadLists = roads.map(({id, color, vta_code, maximum_price, minimum_price, distance, active}, index) => {
         return( 
-            <React.Fragment>
+            <div>
                 <ListItem key={id}>
-                    <ListItemText primary={<p style={{color:color}}> {vta_code}({distance}m)  </p>} secondary={`$ ${minimum_price} - $ ${maximum_price}`} />
+                    <ListItemText primary={<p style={{color:color}}> {vta_code}({distance}m)  </p>} secondary={`${numeral(minimum_price).format('$ 0,0[.]00')} to ${numeral(maximum_price).format('$ 0,0[.]00')}`  } />
                     <ListItemSecondaryAction>
                     <Switch
                         edge="end" checked={active} onChange={() => onToggleRoad(index)} />
                         </ListItemSecondaryAction>
                 </ListItem>
                 <Divider/>
-            </React.Fragment>
+            </div>
         )
     });
     return (
