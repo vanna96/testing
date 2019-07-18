@@ -5,6 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import Select from '@material-ui/core/Select';
 import SearchIcon from '@material-ui/icons/Search';
 import IconButton from '@material-ui/core/IconButton';
+import DirectionsIcon from '@material-ui/icons/Directions';
 import Divider from '@material-ui/core/Divider';
 import arraySort from 'array-sort';
 import {connect} from 'react-redux';

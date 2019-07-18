@@ -1,107 +1,55 @@
-import React, { useState } from 'react';
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListSubheader from "@material-ui/core/ListSubheader";
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Switch from '@material-ui/core/Switch';
+import Divider from "@material-ui/core/Divider";
+import {connect} from 'react-redux';
+import {toggle_road} from '../../../../store/actions/filterRoadAction';
+import numeral from 'numeral'
 
-// extend
-import DistrictsObject from '../../../../componentV/Address/Disticts';
-import CommunesObject from '../../../../componentV/Address/Communes';
+const useStyles = makeStyles(theme => ({
+    root: {
+      width: "100%",
+      maxWidth: 360,
+      backgroundColor: theme.palette.background.paper
+    }
+}));
 
-
-import {useStyles} from "./styles";
-
-const districtsEx = DistrictsObject;
-const communesEx = CommunesObject;
-var communesList = [];
-
-function SideBar() {
-  const classes = useStyles();
-
-  const [values, setValues] = useState('');
-  const [communes, setCommunes] = useState([]);
-  const [districts, setDistricts] = useState([]);
-
-  const districtsList = districtsEx.map( ({_code, _name_kh, _name_en}) => <MenuItem key={_code} value={_code}>{_name_kh} - {_name_en} </MenuItem> );
-
-  if(Array.isArray(communes)){
-    communesList = communes.map( ({_code, _name_kh, _name_en}) => <MenuItem key={_code} value={_code}>{_name_kh} - {_name_en} </MenuItem> );
-  }
-
-  const handleChangeDistrict = (event) => {
-      if(event.target.value !== undefined){
-          const value = event.target.value;
-          setDistricts(value);
-          const start = value.padEnd(6,'0') //120100
-          const end = value.padEnd(6,'9') //120199
-          const communesFilter = communesEx.filter(commune => {
-            if(commune._code>=Number(start) && commune._code<=end){
-              return commune;
-            }
-          })
-          setCommunes(communesFilter);
-      }
-  }
-
-  const handleChangeCommune = (event) => {
-      if(event.target.value !== undefined){
-          setCommunes(event.target.value);
-      }      
-  }
-
-  const handleChangeValue = (event) => {
-      setValues(event.target.value);
-  };
-
-  const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = {
-            district : Array.isArray(communes) ? '':districts,
-            commune : Array.isArray(communes) ? '':communes ,
-            street : values
-        }
-        console.log(data);
-  }
-  return (
-      <form autoComplete="off" onSubmit={handleSubmit}>
-          <FormControl className={classes.formControl}>
-              <InputLabel htmlFor="demo-controlled-open-select">Disticts</InputLabel>
-              <Select 
-                onChange={handleChangeDistrict}
-                value={districts}
-                >
-                  <MenuItem>
-                    <em>None</em>
-                  </MenuItem>
-                  {districtsList}
-              </Select>
-          </FormControl>
-          <FormControl className={classes.formControl}>
-              <InputLabel >Communes</InputLabel>
-              <Select 
-                onChange={handleChangeCommune}
-                value={communes}
-                >
-                    <MenuItem>
-                        <em>None</em>
-                    </MenuItem>
-                    {communesList}
-              </Select>
-          </FormControl>
-          <FormControl className={classes.formControl}>
-              <TextField
-                  label="Road"
-                  value={values.road}
-                  onChange={handleChangeValue}
-              />
-          </FormControl>
-          <Button type="submit" variant="contained" color="primary" className={classes.button}>
-              Search
-          </Button>
-      </form>
-  );
+const  Sidebar = ({roads, onToggleRoad}) => {    
+    const classes = useStyles();
+    const roadLists = roads.map(({id, color, vta_code, maximum_price, minimum_price, distance, active}, index) => {
+        return( 
+            <div>
+                <ListItem key={id}>
+                    <ListItemText primary={<p style={{color:color}}> {vta_code}({distance}m)  </p>} secondary={`${numeral(minimum_price).format('$ 0,0[.]00')} to ${numeral(maximum_price).format('$ 0,0[.]00')}`  } />
+                    <ListItemSecondaryAction>
+                    <Switch
+                        edge="end" checked={active} onChange={() => onToggleRoad(index)} />
+                        </ListItemSecondaryAction>
+                </ListItem>
+                <Divider/>
+            </div>
+        )
+    });
+    return (
+        <List className={classes.root} subheader={<ListSubheader>Roads List {roads.length==0? '':`(${roads.length})`}</ListSubheader>} style={{overflow: 'auto', maxHeight: '590px'}}>
+            {roadLists}
+        </List>        
+    );
 }
 
-export default SideBar;
+const mapStateToProps = state => {
+    return {
+        roads:state.filter.roads
+    }
+};
+
+const mapDispatchToProps = {
+    onToggleRoad:toggle_road
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Sidebar)

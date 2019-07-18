@@ -10,6 +10,8 @@ import Road from './views/Road';
 
 import EditRoad from './views/EditRoad';
 import FilterRoad from './views/FilterRoad';
+import Login from './views/Login';
+import Register from './views/Register';
 
 export default class Routes extends Component {
   render() {
@@ -21,6 +23,8 @@ export default class Routes extends Component {
         <Route component={Road} exact path="/road" />
         <Route component={EditRoad} exact path="/edit-road" />
         <Route component={FilterRoad} exact path="/filter-road" />
+        <Route component={Login} exact path="/login" />
+        <Route component={Register} exact path="/register" />
         <Route component={NotFound} exact path="/not-found" />
         <Redirect to="/not-found" />
       </Switch>
