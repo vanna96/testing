@@ -18,6 +18,10 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { Redirect } from 'react-router-dom';
 import API from '../../libraries/API';
 import axios from 'axios';
+import {connect} from 'react-redux';
+import {Login} from '../../store/actions/filterRoadAction';
+import { createBrowserHistory } from 'history';
+const history = createBrowserHistory();
 
 const useStyles = makeStyles(theme => ({
   '@global': {
@@ -44,7 +48,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SignIn = () => {
+const SignIn = ({onLogin}) => {
     const classes = useStyles();
     const [signIn, setSignIn]  = React.useState({
         email:'',
@@ -64,34 +68,41 @@ const SignIn = () => {
 
     const handleSubmit = (e) =>{
         e.preventDefault();
-        // setSignIn({...signIn, isLoading:true});
-        axios.post('http://192.168.13.108:8283/api/login', {
-            email: 'sovannapoung@gmail.com',
-            password: 123456
-        }).then(response => {
-            sessionStorage.setItem('userData', JSON.stringify(response.data));
-            setSignIn({
-                ...signIn,
-                redirect:true
-            })
-        })
-        .catch(error => {
-            setSignIn({
-              ...signIn,
-              error:true,
-              massage:error.response.data.message
-            })
-        });
+        // // setSignIn({...signIn, isLoading:true});
+        // axios.post('http://192.168.13.108:8283/api/login', {
+        //     email: 'sovannapoung@gmail.com',
+        //     password: 123456
+        // }).then(response => {
+        //     sessionStorage.setItem('userData', JSON.stringify(response.data));
+        //     setSignIn({
+        //         ...signIn,
+        //         redirect:true
+        //     })
+        // })
+        // .catch(error => {
+        //     setSignIn({
+        //       ...signIn,
+        //       error:true,
+        //       massage:error.response.data.message
+        //     })
+        // });
 
-        // e.preventDefault();
-        // onLogin({
-        //     email: signIn.email,
-        //     password: signIn.password
-        // }).then(
-        //     // (res) => setSignIn({...signIn, redirect:true, isLoading:true}),
-        //     // (err) => setSignIn({...signIn, isLoading:true})
-        // );
+        onLogin({
+            email: signIn.email,
+            password: signIn.password
+        }).then(
+            (e) => setSignIn({
+                    ...signIn,
+                    redirect:true
+                })
+            ,
+            ({data}) => setSignIn({
+                ...signIn,
+                massage:data
+            })
+        );
     }
+    console.log(signIn.massage)
 
     if(sessionStorage.getItem("userData")){ 
         return (<Redirect to="/contact"/>)
@@ -119,8 +130,8 @@ const SignIn = () => {
                     value={signIn.email}
                     variant="outlined"
                     margin="normal"
-                    type='email'
-                    required
+                    // type='email'
+                    // required
                     fullWidth
                     autoFocus
                     onChange={handleChange('email')}
@@ -130,7 +141,7 @@ const SignIn = () => {
                     value={signIn.password}
                     variant="outlined"
                     margin="normal"
-                    required
+                    // required
                     fullWidth                    
                     type={signIn.showPassword ? 'text' : 'password'}
                     onChange={handleChange('password')}
@@ -176,4 +187,8 @@ const SignIn = () => {
     );
 }
 
-export default SignIn;
+const mapDispatchToProps = {
+    onLogin:Login
+}
+
+export default connect(null, mapDispatchToProps)(SignIn);

@@ -1,6 +1,6 @@
 import API from '../../libraries/API';
 import axios from 'axios';
-import { history } from '../../helper';
+import { createBrowserHistory } from 'history';
 
 export const SEARCH_ROAD = 'SEARCH_ROAD';
 export const TOGGLE_ROAD = 'TOGGLE_ROAD';
@@ -9,6 +9,7 @@ export const FILTER_ROAD = 'FILTER_ROAD';
 export const FILTER_GET_TOP = 'FILTER_GET_TOP';
 export const FILTER_DISTANCE = 'FILTER_DISTANCE';
 export const LOGIN = 'LOGIN';
+const history = createBrowserHistory();
 
 
 const  getRandomColor = () => {
@@ -75,14 +76,15 @@ export const filter_getTop = (data) => {
     }  
 }
 
-export const Login = (data) => {
-    return () => {
-        return axios.post('http://192.168.13.108:8283/api/login', {
-            email: 'teysocheatha@gmail.com',
-            password: 123123
+export const Login = (data) => {    
+    return (dispatch) => {
+        return axios.post('https://reqres.in/api/login', {
+            email: 'eve.holt@reqres.in',
+            // password: 'cityslicka'
         }).then(response => {
-            sessionStorage.setItem('userData', response.data);
-            history.push('/'); 
+            // console.log(history)
+            // sessionStorage.setItem('userData', response.data);
+            // history.push('/contact'); 
         })
         .catch(error => {
             throw(error);
