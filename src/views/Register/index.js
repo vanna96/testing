@@ -9,6 +9,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import {register} from '../../store/actions/filterRoadAction';
+import {connect} from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
     '@global': {
@@ -33,29 +36,97 @@ const useStyles = makeStyles(theme => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+    BorderColor:{
+        borderColor: 'red'
+    },
+    multilineColor:{
+        borderColor:'red'
+    },
+    text:{
+        color:'red',
+        margin:'10px',
+        fontSize:'16px'
+    }
 }));
 
-const  Register = () => {
+const  Register = ({onRegister}) => {
     const classes = useStyles();
     const [register, setRegister] = React.useState({
         name:'',
         email:'',
         password:'',
-        showPassword:false,
+        password_confirmation:'',
+        color:false,
         isLoading:false,
-        redirect: false
+        error:false,
+        redirect:false,
+        messages:[]        
     })
     const handleSubmit = (e) =>{
-        // setSignIn({...signIn, isLoading:true});
+        setRegister({...register, isLoading:true});
         e.preventDefault();
-        // onLogin({
-        //     email: signIn.email,
-        //     password: signIn.password
-        // }).then(
-        //     (res) => setSignIn({...signIn, redirect:true, isLoading:true}),
-        //     (err) => setSignIn({...signIn, isLoading:true})
-        // );
+        onRegister({
+            name: register.name,
+            email: register.email,
+            password: register.password,
+            password_confirmation: register.password_confirmation,            
+        })
+        .then(
+            (res) => setRegister({
+                ...register,
+                redirect:true,
+            })
+            ,
+            (err) => {
+                var arrayResult = [];
+                // const results = err.response.data.errors;
+                const results = {
+                    "errors": {
+                        "email": [
+                            "The email has already been taken."
+                        ],
+                        "password": [
+                            "The password confirmation does not match."
+                        ]
+                    }
+                }
+                Object.keys(results).map(() => {
+                    const objectError = results['errors'];
+                    Object.keys(objectError).map(function(item){
+                        const eachObject = objectError[item];
+                        eachObject.map(function(list){
+                            arrayResult.push(list);
+                        });
+                    });
+                });
+                setRegister({
+                    ...register,
+                    messages:arrayResult,
+                    error:true
+                })
+            }
+        );
     }
+    const handleChange = event => {
+        setRegister({ ...register, [event.target.name]: event.target.value });
+    };
+
+    React.useEffect(() => {
+        if (register.password !== register.password_confirmation) {
+            setRegister({...register, color: true, isLoading:true})
+        } else {
+            setRegister({...register, color: false, isLoading:false})
+        }
+    }, [register.password_confirmation, register.password])
+   
+    const loopMessage = register.messages.map( (lists) => {
+        return <p className={classes.text}>{lists}</p>  
+    })
+
+    if(register.redirect){
+        return (<Redirect to="/about" />)
+    }
+
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -66,16 +137,21 @@ const  Register = () => {
                 <Typography component="h1" variant="h5">
                     Register
                 </Typography>
-                <form className={classes.form} noValidate>
+                <React.Fragment style={{width:'100%'}}>
+                    { register.error ? loopMessage :'' }
+                </React.Fragment>
+                <form className={classes.form} onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <TextField
                                 label="Name"
                                 name="name"
+                                value={register.name}
                                 variant="outlined"
                                 required
                                 fullWidth                                
                                 autoFocus
+                                onChange={handleChange}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -85,6 +161,7 @@ const  Register = () => {
                                 required
                                 fullWidth
                                 name="email"
+                                onChange={handleChange}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -94,17 +171,20 @@ const  Register = () => {
                                 label="Password"
                                 type="password"
                                 required
-                                fullWidth                                
+                                fullWidth
+                                onChange={handleChange}                             
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <TextField                                
+                            <TextField
+                                error={register.color}                          
                                 label="Confirm Password"
-                                name="password"
+                                name="password_confirmation"
                                 type="password"
                                 variant="outlined"
                                 required
-                                fullWidth                                
+                                fullWidth
+                                onChange={handleChange}                     
                             />
                         </Grid>
                     </Grid>
@@ -114,6 +194,7 @@ const  Register = () => {
                     variant="contained"
                     color="primary"
                     className={classes.submit}
+                    disabled={register.isLoading}
                 >
                     Register
                 </Button>
@@ -130,4 +211,8 @@ const  Register = () => {
   );
 }
 
-export default Register;    
+const mapDispatchToProps = {
+    onRegister:register
+}
+
+export default connect(null,mapDispatchToProps)(Register);    

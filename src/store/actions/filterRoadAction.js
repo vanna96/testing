@@ -1,6 +1,5 @@
 import API from '../../libraries/API';
 import axios from 'axios';
-import { createBrowserHistory } from 'history';
 
 export const SEARCH_ROAD = 'SEARCH_ROAD';
 export const TOGGLE_ROAD = 'TOGGLE_ROAD';
@@ -9,7 +8,6 @@ export const FILTER_ROAD = 'FILTER_ROAD';
 export const FILTER_GET_TOP = 'FILTER_GET_TOP';
 export const FILTER_DISTANCE = 'FILTER_DISTANCE';
 export const LOGIN = 'LOGIN';
-const history = createBrowserHistory();
 
 
 const  getRandomColor = () => {
@@ -77,17 +75,39 @@ export const filter_getTop = (data) => {
 }
 
 export const Login = (data) => {    
-    return (dispatch) => {
-        return axios.post('https://reqres.in/api/login', {
-            email: 'eve.holt@reqres.in',
-            // password: 'cityslicka'
+    return () => {
+        return axios.post('http://192.168.13.108:8283/api/login', {
+            email: 'sovannapoung@gmail.com',
+            password: '123456'
         }).then(response => {
-            // console.log(history)
-            // sessionStorage.setItem('userData', response.data);
-            // history.push('/contact'); 
+            console.log(response);
+            const authentication = response.data.token_type +' '+ response.data.access_token
+            localStorage.setItem('auth', authentication);
+        })
+        .catch(error => {
+            throw(error)
+        });
+    }; 
+}
+
+export const register = (data) => {
+    return () => {
+        return axios.post('http://192.168.13.108:8283/api/register', data).then(response => {
+            console.log(response);
         })
         .catch(error => {
             throw(error);
         });
-    }; 
+    }
+}
+
+export const reset = (data) => {
+    return () => {
+        return axios.post('http://192.168.13.108:8283/api/user/reset-password', data).then(response => {
+            console.log(response);
+        })
+        .catch(error => {
+            throw(error);
+        });
+    }
 }

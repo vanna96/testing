@@ -5,7 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import Dashboard from '../../layout/Dashboard';
 import SearchBar from './components/Search';
 import GoogleMap from './components/Map';
-// import SideBar from './components/SideBar/index';
+import SideBar from './components/SideBar';
 
 function EditRoad() {
   return (
@@ -19,7 +19,7 @@ function EditRoad() {
             </Grid>
             <Grid item xs={12} md={4} lg={3}>
                 <Paper >
-                    {/* <SideBar/> */}
+                    <SideBar/>
                 </Paper>
             </Grid>
         </Grid>

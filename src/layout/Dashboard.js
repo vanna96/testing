@@ -48,19 +48,16 @@ export default function Dashboard({title,children}) {
   }
 
   function handleLogout() {
-    setAnchorEl(null);
-    const session = sessionStorage.getItem("userData");
-    const sessionViewName = JSON.parse(session);
-
-    const Authorization = 
-    sessionViewName.token_type+' '+ sessionViewName.access_token
-    sessionStorage.clear();
-    axios.post('http://192.168.13.108:8283/api/logout', {Authorization}).then(response => {
-        console.log(response);
-    })
-    .catch(error => {
-        console.log(error);
-    });
+        setAnchorEl(null);
+        const session = localStorage.getItem("auth");
+        console.log({Authorization:session});
+        axios.post('http://192.168.13.108:8283/api/logout', {Authorization:session}).then(response => {
+            console.log(response);
+            localStorage.clear();
+        })
+        .catch(error => {
+            console.log(error.response.data);
+        });
   }
 
   return (
@@ -85,7 +82,7 @@ export default function Dashboard({title,children}) {
                 <NotificationsIcon />
                 </Badge>
             </IconButton>
-            {sessionStorage.getItem("userData") ?
+            {localStorage.getItem("auth") ?
             <>
                 <IconButton
                     aria-label="Account of current user"
