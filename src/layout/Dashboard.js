@@ -53,8 +53,15 @@ export default function Dashboard({title,children}) {
         const session = localStorage.getItem("auth");
         // console.log(session);
         // localStorage.setItem('auth', '');
-        axios.post('http://192.168.13.108:8283/api/logout', {Authorization:'session'}).then(response => {
-            // localStorage.getItem('auth', '');
+        axios.post('http://192.168.13.108:8283/api/logout',{
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': session
+            },session
+
+        }).then(response => {
+          // localStorage.setItem('auth', '');
+          console.log('dfd');
         })
         .catch(error => {
             console.log(error.response.data);
