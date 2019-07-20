@@ -3,9 +3,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
+import { NavLink } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
@@ -20,28 +18,31 @@ import {connect} from 'react-redux';
 import {Login} from '../../store/actions/filterRoadAction';
 
 const useStyles = makeStyles(theme => ({
-  '@global': {
-    body: {
-      backgroundColor: theme.palette.common.white,
+    '@global': {
+        body: {
+        backgroundColor: theme.palette.common.white,
+        },
     },
-  },
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
+    paper: {
+        marginTop: theme.spacing(8),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    avatar: {
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.secondary.main,
+    },
+    form: {
+        width: '100%',
+        marginTop: theme.spacing(1),
+    },
+    submit: {
+        margin: theme.spacing(3, 0, 2),
+    },
+    navlink:{
+        color:'#3f51b5'
+    }
 }));
 
 const SignIn = ({onLogin}) => {
@@ -74,12 +75,11 @@ const SignIn = ({onLogin}) => {
                     redirect:true
             })
             ,
-            (err) => console.log(err.response.data)
-            // setSignIn({
-            //     ...signIn,
-            //     error:true,
-            //     massage:err.response.data.message,
-            // })
+            (err) => setSignIn({
+                ...signIn,
+                error:true,
+                massage:err.response.data.message,
+            })
         );
     }
 
@@ -149,14 +149,14 @@ const SignIn = ({onLogin}) => {
                 </Button>
                 <Grid container>
                     <Grid item xs>
-                        <Link href="/forgot-password" variant="body2">
+                        <NavLink to="/forgot-password" className={classes.navlink}>
                             {"Forgot password?"}
-                        </Link>                   
+                        </NavLink>                   
                     </Grid>
                     <Grid item>
-                        <Link href="/register" variant="body2">
+                        <NavLink to="/register" className={classes.navlink}>
                             {"Don't have an account? Register"}
-                        </Link>
+                        </NavLink>
                     </Grid>
                 </Grid>
             </form>

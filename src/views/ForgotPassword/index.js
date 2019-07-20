@@ -8,9 +8,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import { Redirect } from 'react-router-dom';
 import {connect} from 'react-redux';
 import {reset} from '../../store/actions/filterRoadAction';
+import { NavLink } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
     '@global': {
@@ -36,7 +36,6 @@ const useStyles = makeStyles(theme => ({
         margin: theme.spacing(3, 0, 2),
     },
     text:{
-        color:'red',
         margin:'10px',
         fontSize:'16px'
     }
@@ -47,9 +46,9 @@ const ResetPassword = ({onReset}) => {
     const [reset, setReset]  = React.useState({
         email:'',
         isLoading:false,
-        redirect:false,
         error:false,
         massages:[],
+        color:''
     });
     const handleChange = prop => event => {
         setReset({ ...reset, [prop]: event.target.value });
@@ -64,11 +63,23 @@ const ResetPassword = ({onReset}) => {
         onReset({
             email:reset.email
         }).then(
-            (res) => setReset({
+            (res) => {
+                var arrayResult = [];
+                const results = {
+                    "status": 201,
+                    "message": "Link has been send to your mail."
+                }
+                Object.keys(results).map((item) => {
+                    if(item == "message"){
+                        arrayResult.push(results[item])
+                    }  
+                });
+                setReset({
                     ...reset,
-                    redirect:true
-            })
-            ,
+                    massages:arrayResult,
+                    color:'#3fa333'
+                })
+            },
             (err) => {
                 var arrayResult = [];
                 // const results = err.response.data;
@@ -86,18 +97,15 @@ const ResetPassword = ({onReset}) => {
                     ...reset,
                     error:true,
                     massages:arrayResult,
+                    color:'red'
                 });
             }            
         );
     }
 
     const loopMessage = reset.massages.map( (lists) => {
-        return <p className={classes.text}>{lists}</p>  
+        return <p className={classes.text} style={{color:reset.color}}>{lists}</p>  
     })
-
-    if(reset.redirect){
-        return (<Redirect to="/login" />)
-    }
     return (
         <Container maxWidth="xs">
         <CssBaseline />
@@ -108,9 +116,9 @@ const ResetPassword = ({onReset}) => {
                 <Typography variant="h5">
                     Reset Password
                 </Typography>
-                <React.Fragment style={{width:'100%'}}>
+                <div style={{width:'100%'}}>
                     { reset.error ? loopMessage :'' }
-                </React.Fragment>
+                </div>
                 <form className={classes.form} onSubmit={handleSubmit}>
                     <TextField                    
                         label="Email Address"
@@ -137,18 +145,16 @@ const ResetPassword = ({onReset}) => {
                             </Button>
                         </Grid>
                         <Grid item xs={4}>
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                color="secondary"
-                                className={classes.submit}
-                                onClick = {() => setReset({
-                                    ...reset,
-                                    redirect:true
-                                })}
-                            >
-                                Cancel
-                            </Button>                      
+                            <NavLink to="/login" style={{ textDecoration: 'none', color: 'unset' }} >
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    color="secondary"
+                                    className={classes.submit}
+                                >
+                                    Cancel
+                                </Button> 
+                            </NavLink >             
                         </Grid>
                     </Grid>                    
                 </form>

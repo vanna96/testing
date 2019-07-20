@@ -76,11 +76,7 @@ export const filter_getTop = (data) => {
 
 export const Login = (data) => {    
     return () => {
-        return axios.post('http://192.168.13.108:8283/api/login', {
-            email: 'sovannapoung@gmail.com',
-            password: '123456'
-        }).then(response => {
-            console.log(response);
+        return axios.post('http://192.168.13.108:8283/api/login', data).then(response => {
             const authentication = response.data.token_type +' '+ response.data.access_token
             localStorage.setItem('auth', authentication);
         })

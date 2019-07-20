@@ -16,6 +16,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
+import { NavLink } from 'react-router-dom';
 
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -50,10 +51,10 @@ export default function Dashboard({title,children}) {
   function handleLogout() {
         setAnchorEl(null);
         const session = localStorage.getItem("auth");
-        console.log({Authorization:session});
-        axios.post('http://192.168.13.108:8283/api/logout', {Authorization:session}).then(response => {
-            console.log(response);
-            localStorage.clear();
+        // console.log(session);
+        // localStorage.setItem('auth', '');
+        axios.post('http://192.168.13.108:8283/api/logout', {Authorization:'session'}).then(response => {
+            // localStorage.getItem('auth', '');
         })
         .catch(error => {
             console.log(error.response.data);
@@ -111,7 +112,9 @@ export default function Dashboard({title,children}) {
                     <MenuItem onClick={handleClose}>Profile</MenuItem>
                     <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
-            </> : <Button color="inherit">Login</Button>
+            </> : <NavLink to="/login" style={{ textDecoration: 'none', color: 'unset' }} >
+                        <Button color="inherit">Login</Button>
+                    </NavLink >
             }
         </Toolbar>
       </AppBar>

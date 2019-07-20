@@ -3,7 +3,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import Link from '@material-ui/core/Link';
+import { NavLink } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
@@ -46,6 +46,9 @@ const useStyles = makeStyles(theme => ({
         color:'red',
         margin:'10px',
         fontSize:'16px'
+    },
+    navlink:{
+        color:'#3f51b5'
     }
 }));
 
@@ -124,7 +127,7 @@ const  Register = ({onRegister}) => {
     })
 
     if(register.redirect){
-        return (<Redirect to="/about" />)
+        return (<Redirect to="/login" />)
     }
 
     return (
@@ -137,9 +140,9 @@ const  Register = ({onRegister}) => {
                 <Typography component="h1" variant="h5">
                     Register
                 </Typography>
-                <React.Fragment style={{width:'100%'}}>
+                <div style={{width:'100%'}}>
                     { register.error ? loopMessage :'' }
-                </React.Fragment>
+                </div>
                 <form className={classes.form} onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
@@ -200,9 +203,9 @@ const  Register = ({onRegister}) => {
                 </Button>
                 <Grid container justify="flex-end">
                     <Grid item>
-                    <Link href="/login" variant="body2">
+                    <NavLink to="/login" className={classes.navlink}>
                         Already have an account? Login
-                    </Link>
+                    </NavLink>
                     </Grid>
                 </Grid>
                 </form>
@@ -215,4 +218,4 @@ const mapDispatchToProps = {
     onRegister:register
 }
 
-export default connect(null,mapDispatchToProps)(Register);    
+export default connect(null, mapDispatchToProps)(Register);    

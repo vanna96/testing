@@ -13,6 +13,7 @@ import FilterRoad from './views/FilterRoad';
 import Login from './views/Login';
 import Register from './views/Register';
 import ForgotPassword from './views/ForgotPassword';
+import PrivateRoute from './helper/ProtectedRoute';
 
 export default class Routes extends Component {
   render() {
@@ -22,12 +23,13 @@ export default class Routes extends Component {
         <Route component={About} exact path="/about" />
         <Route component={Contact} exact path="/contact" />
         <Route component={Road} exact path="/road" />
-        <Route component={EditRoad} exact path="/edit-road" />
+        {/* <Route component={EditRoad} exact path="/edit-road" /> */}
         <Route component={FilterRoad} exact path="/filter-road" />
         <Route component={Login} exact path="/login" />
         <Route component={Register} exact path="/register" />
         <Route component={ForgotPassword} exact path="/forgot-password" />
         <Route component={NotFound} exact path="/not-found" />
+        <PrivateRoute path="/edit-road"  exact component={EditRoad} />
         <Redirect to="/not-found" />
       </Switch>
     );
