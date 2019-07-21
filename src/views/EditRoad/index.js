@@ -5,7 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import Dashboard from '../../layout/Dashboard';
 import SearchBar from './components/Search';
 import GoogleMap from './components/Map';
-import SideBar from './components/SideBar';
+import SideBar from './components/Sidebar';
 
 function EditRoad() {
   return (
