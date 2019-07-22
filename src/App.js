@@ -1,5 +1,4 @@
 import React from 'react';
-import Dashboard from './layout/Dashboard'
 import { Router } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 

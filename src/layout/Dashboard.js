@@ -51,17 +51,14 @@ export default function Dashboard({title,children}) {
   function handleLogout() {
         setAnchorEl(null);
         const session = localStorage.getItem("auth");
-        // console.log(session);
-        // localStorage.setItem('auth', '');
-        axios.post('http://192.168.13.108:8283/api/logout',{
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': session
-            },session
-
-        }).then(response => {
-          // localStorage.setItem('auth', '');
-          console.log('dfd');
+        var headers = {
+            'Accept': 'application/json',
+            'Authorization': session 
+        }
+        axios.post('http://192.168.13.114:8283/api/logout',null, {
+            headers: headers
+        }).then(() => {
+          localStorage.setItem('auth', '');
         })
         .catch(error => {
             console.log(error.response.data);

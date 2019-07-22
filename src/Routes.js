@@ -14,6 +14,8 @@ import Login from './views/Login';
 import Register from './views/Register';
 import ForgotPassword from './views/ForgotPassword';
 import PrivateRoute from './helper/ProtectedRoute';
+import ChangePassword from './views/ChangePassword';
+
 
 export default class Routes extends Component {
   render() {
@@ -23,7 +25,7 @@ export default class Routes extends Component {
         <Route component={About} exact path="/about" />
         <Route component={Contact} exact path="/contact" />
         <Route component={Road} exact path="/road" />
-        {/* <Route component={EditRoad} exact path="/edit-road" /> */}
+        <PrivateRoute component={ChangePassword} exact path="/change-password" />
         <Route component={FilterRoad} exact path="/filter-road" />
         <Route component={Login} exact path="/login" />
         <Route component={Register} exact path="/register" />

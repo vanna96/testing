@@ -58,7 +58,7 @@ const ResetPassword = ({onReset}) => {
         e.preventDefault();
         setReset({
             ...reset,
-            isLoading:false,
+            isLoading:true,
         })
         onReset({
             email:reset.email
@@ -70,12 +70,13 @@ const ResetPassword = ({onReset}) => {
                     "message": "Link has been send to your mail."
                 }
                 Object.keys(results).map((item) => {
-                    if(item == "message"){
+                    if(item === "message"){
                         arrayResult.push(results[item])
                     }  
                 });
                 setReset({
                     ...reset,
+                    email: '',
                     massages:arrayResult,
                     color:'#3fa333'
                 })
@@ -95,7 +96,6 @@ const ResetPassword = ({onReset}) => {
                 });
                 setReset({
                     ...reset,
-                    error:true,
                     massages:arrayResult,
                     color:'red'
                 });
@@ -117,7 +117,7 @@ const ResetPassword = ({onReset}) => {
                     Reset Password
                 </Typography>
                 <div style={{width:'100%'}}>
-                    { reset.error ? loopMessage :'' }
+                    { loopMessage.length > 0 ? loopMessage:'' }
                 </div>
                 <form className={classes.form} onSubmit={handleSubmit}>
                     <TextField                    

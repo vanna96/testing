@@ -1,5 +1,4 @@
 import API from '../../libraries/API';
-import axios from 'axios';
 
 export const SEARCH_ROAD = 'SEARCH_ROAD';
 export const TOGGLE_ROAD = 'TOGGLE_ROAD';
@@ -76,7 +75,7 @@ export const filter_getTop = (data) => {
 
 export const Login = (data) => {    
     return () => {
-        return axios.post('http://192.168.13.108:8283/api/login', data).then(response => {
+        return API.post('/login', data).then(response => {
             const authentication = response.data.token_type +' '+ response.data.access_token
             localStorage.setItem('auth', authentication);
         })
@@ -88,7 +87,7 @@ export const Login = (data) => {
 
 export const register = (data) => {
     return () => {
-        return axios.post('http://192.168.13.108:8283/api/register', data).then(response => {
+        return API.post('/register', data).then(response => {
             console.log(response);
         })
         .catch(error => {
@@ -99,8 +98,26 @@ export const register = (data) => {
 
 export const reset = (data) => {
     return () => {
-        return axios.post('http://192.168.13.108:8283/api/user/reset-password', data).then(response => {
+        return API.post('/user/reset-password', data).then(response => {
             console.log(response);
+        })
+        .catch(error => {
+            throw(error);
+        });
+    }
+}
+
+export const changePassword = (data) => {
+    var headers = {
+        'Accept': 'application/json',
+        'Authorization': localStorage.getItem('auth') 
+    }
+    return () => {
+        return API.post('/user/change-password',data,{
+            headers: headers
+        }
+        ).then(response => {
+            return response;
         })
         .catch(error => {
             throw(error);

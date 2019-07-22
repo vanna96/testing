@@ -13,6 +13,7 @@ import {search_roads, filter_roads,filter_distance,filter_getTop} from '../../..
 import communes from '../../../../componentV/Address/Communes';
 import districts from '../../../../componentV/Address/Disticts';
 import {useStyles} from './styles';
+import AutoComplete  from '../Multiselect';
 
 const SearchBar = ({onSearch, onFilterPrice, onFilterGetTop, onFilterDistance}) => {
     const classes = useStyles();
@@ -69,7 +70,7 @@ const SearchBar = ({onSearch, onFilterPrice, onFilterGetTop, onFilterDistance}) 
 
 
     return (
-        <Paper className={classes.root} style={{overflow: 'auto'}}>
+        <Paper className={classes.root}>
             <Typography className={classes.search}>Search</Typography>
             <Select
                 name="district"
@@ -90,6 +91,9 @@ const SearchBar = ({onSearch, onFilterPrice, onFilterGetTop, onFilterDistance}) 
                 <MenuItem value="" disabled>Choose Communes</MenuItem>
                 {communesList}
             </Select>
+            <AutoComplete DataSelected={selected.commune}/>
+
+
             <IconButton onClick={() => onSearch({
                 address_id:selected.commune == ''? selected.district:selected.commune
                 }) }

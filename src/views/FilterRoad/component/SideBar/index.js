@@ -36,7 +36,7 @@ const  Sidebar = ({roads, onToggleRoad}) => {
         )
     });
     return (
-        <List className={classes.root} subheader={<ListSubheader>Roads List {roads.length==0? '':`(${roads.length})`}</ListSubheader>} style={{overflow: 'auto', maxHeight: '590px'}}>
+        <List className={classes.root} subheader={<ListSubheader>Roads List {roads.length===0? '':`(${roads.length})`}</ListSubheader>} style={{overflow: 'auto', maxHeight: '590px'}}>
             {roadLists}
         </List>        
     );
