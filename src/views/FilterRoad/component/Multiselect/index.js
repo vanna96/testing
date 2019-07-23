@@ -1,10 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import deburr from 'lodash/deburr';
 import Downshift from 'downshift';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import Popper from '@material-ui/core/Popper';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Chip from '@material-ui/core/Chip';
@@ -64,51 +62,36 @@ function renderInput(inputProps) {
   );
 }
 
-renderInput.propTypes = {
-  classes: PropTypes.object.isRequired,
-  InputProps: PropTypes.object,
-};
-
 function renderSuggestion(suggestionProps) {
   const { suggestion, index, itemProps, highlightedIndex, selectedItem } = suggestionProps;
   const isHighlighted = highlightedIndex === index;
-  const isSelected = (selectedItem || '').indexOf(suggestion.label) > -1;
+  const isSelected = (selectedItem || '').indexOf(suggestion.name) > -1;
 
   return (
     <MenuItem
       {...itemProps}
-      key={suggestion.label}
+      key={suggestion.name}
       selected={isHighlighted}
       component="div"
       style={{
         fontWeight: isSelected ? 500 : 400,
       }}
     >
-      {suggestion.label}
+      {suggestion.name}
     </MenuItem>
   );
 }
 
-renderSuggestion.propTypes = {
-  highlightedIndex: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.number]).isRequired,
-  index: PropTypes.number.isRequired,
-  itemProps: PropTypes.object.isRequired,
-  selectedItem: PropTypes.string.isRequired,
-  suggestion: PropTypes.shape({
-    label: PropTypes.string.isRequired,
-  }).isRequired,
-};
-
-function getSuggestions(value, { showEmpty = false } = {}) {
+function getSuggestions(value, street, { showEmpty = false } = {}) {
   const inputValue = deburr(value.trim()).toLowerCase();
   const inputLength = inputValue.length;
   let count = 0;
 
   return inputLength === 0 && !showEmpty
     ? []
-    : suggestions.filter(suggestion => {
+    : street.filter(suggestion => {
         const keep =
-          count < 5 && suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
+          count < 5 && suggestion.name.slice(0, inputLength).toLowerCase() === inputValue;
 
         if (keep) {
           count += 1;
@@ -118,106 +101,6 @@ function getSuggestions(value, { showEmpty = false } = {}) {
       });
 }
 
-function DownshiftMultiple(props) {
-  const { classes } = props;
-  const [inputValue, setInputValue] = React.useState('');
-  const [selectedItem, setSelectedItem] = React.useState([]);
-
-  function handleKeyDown(event) {
-    if (selectedItem.length && !inputValue.length && event.key === 'Backspace') {
-      setSelectedItem(selectedItem.slice(0, selectedItem.length - 1));
-    }
-  }
-
-  function handleInputChange(event) {
-    setInputValue(event.target.value);
-  }
-
-  function handleChange(item) {
-    let newSelectedItem = [...selectedItem];
-    if (newSelectedItem.indexOf(item) === -1) {
-      newSelectedItem = [...newSelectedItem, item];
-    }
-    setInputValue('');
-    setSelectedItem(newSelectedItem);
-  }
-
-  const handleDelete = item => () => {
-    const newSelectedItem = [...selectedItem];
-    newSelectedItem.splice(newSelectedItem.indexOf(item), 1);
-    setSelectedItem(newSelectedItem);
-  };
-
-  return (
-    <Downshift
-      id="downshift-multiple"
-      inputValue={inputValue}
-      onChange={handleChange}
-      selectedItem={selectedItem}
-    >
-      {({
-        getInputProps,
-        getItemProps,
-        getLabelProps,
-        isOpen,
-        inputValue: inputValue2,
-        selectedItem: selectedItem2,
-        highlightedIndex,
-      }) => {
-        const { onBlur, onChange, onFocus, ...inputProps } = getInputProps({
-          onKeyDown: handleKeyDown,
-          placeholder: 'Select multiple countries',
-        });
-
-        return (
-          <div className={classes.container}>
-            {renderInput({
-              fullWidth: true,
-              classes,
-              InputLabelProps: getLabelProps(),
-              InputProps: {
-                startAdornment: selectedItem.map(item => (
-                  <Chip
-                    key={item}
-                    tabIndex={-1}
-                    label={item}
-                    className={classes.chip}
-                    onDelete={handleDelete(item)}
-                  />
-                )),
-                onBlur,
-                onChange: event => {
-                  handleInputChange(event);
-                  onChange(event);
-                },
-                onFocus,
-              },
-              inputProps,
-            })}
-
-            {isOpen ? (
-              <Paper className={classes.paper} square>
-                {getSuggestions(inputValue2).map((suggestion, index) =>
-                  renderSuggestion({
-                    suggestion,
-                    index,
-                    itemProps: getItemProps({ item: suggestion.label }),
-                    highlightedIndex,
-                    selectedItem: selectedItem2,
-                  }),
-                )}
-              </Paper>
-            ) : null}
-          </div>
-        );
-      }}
-    </Downshift>
-  );
-}
-
-DownshiftMultiple.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -249,14 +132,104 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-let popperNode;
-
 export default function IntegrationDownshift() {
-  const classes = useStyles();
+    const classes = useStyles();
+    const [inputValue, setInputValue] = React.useState('');
+    const [selectedItem, setSelectedItem] = React.useState([]);
+    const [street, setStreet] = React.useState([
+      {id: 1140, name: "000 flex test street", code: "street001", commune: "1201023321"},
+      {id: 1141, name: "0lex test street", code: "street001", commune: "1201023321,123"},
+      {id: 8, name: "31 Segment St. (7)", code: "7", commune: "1206,120602"},
+    ]);
+    function handleKeyDown(event) {
+      if (selectedItem.length && !inputValue.length && event.key === 'Backspace') {
+        setSelectedItem(selectedItem.slice(0, selectedItem.length - 1));
+      }
+    }
 
+    function handleInputChange(event) {
+      setInputValue(event.target.value);
+    }
+
+    function handleChange(item) {
+      let newSelectedItem = [...selectedItem];
+      if (newSelectedItem.indexOf(item) === -1) {
+        newSelectedItem = [...newSelectedItem, item];
+      }
+      setInputValue('');
+      setSelectedItem(newSelectedItem);
+    }
+
+    const handleDelete = item => () => {
+      const newSelectedItem = [...selectedItem];
+      newSelectedItem.splice(newSelectedItem.indexOf(item), 1);
+      setSelectedItem(newSelectedItem);
+    };
   return (
     <div className={classes.root}>
-      <DownshiftMultiple classes={classes} />
+      <Downshift
+      id="downshift-multiple"
+      inputValue={inputValue}
+      onChange={handleChange}
+      selectedItem={selectedItem}
+    >
+      {({
+        getInputProps,
+        getItemProps,
+        getLabelProps,
+        isOpen,
+        inputValue: inputValue2,
+        selectedItem: selectedItem2,
+        highlightedIndex,
+      }) => {
+        const { onBlur, onChange, onFocus, ...inputProps } = getInputProps({
+          onKeyDown: handleKeyDown,
+          placeholder: 'Street',
+        });
+
+        return (
+          <div className={classes.container}>
+            {renderInput({
+              fullWidth: true,
+              classes,
+              InputLabelProps: getLabelProps(),
+              InputProps: {
+                startAdornment: selectedItem.map(item => (
+                  <Chip
+                    key={item}
+                    tabIndex={-1}
+                    label={item}
+                    className={classes.chip}
+                    onDelete={handleDelete(item)}
+                  />
+                )),
+                onBlur,
+                onChange: event => {
+                  handleInputChange(event);
+                  onChange(event);
+                },
+                onFocus,
+              },
+              inputProps,
+            })}
+
+            {isOpen ? (
+              <Paper className={classes.paper} square>
+                {getSuggestions(inputValue2, street).map((suggestion, index) =>
+                  renderSuggestion({
+                    suggestion,
+                    index,
+                    itemProps: getItemProps({ item: suggestion.name }),
+                    highlightedIndex,
+                    selectedItem: selectedItem2,
+                  }),
+                )}
+              </Paper>
+            ) : null}
+          </div>
+        );
+      }}
+    </Downshift>
       
     </div>
   );

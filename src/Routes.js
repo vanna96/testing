@@ -15,7 +15,7 @@ import Register from './views/Register';
 import ForgotPassword from './views/ForgotPassword';
 import PrivateRoute from './helper/ProtectedRoute';
 import ChangePassword from './views/ChangePassword';
-
+import Polygon from './views/Polygon';
 
 export default class Routes extends Component {
   render() {
@@ -32,6 +32,7 @@ export default class Routes extends Component {
         <Route component={ForgotPassword} exact path="/forgot-password" />
         <Route component={NotFound} exact path="/not-found" />
         <PrivateRoute path="/edit-road"  exact component={EditRoad} />
+        <Route component={Polygon} exact path="/polygon" />
         <Redirect to="/not-found" />
       </Switch>
     );

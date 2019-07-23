@@ -8,6 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import arraySort from 'array-sort';
 import {connect} from 'react-redux';
+import Hidden from '@material-ui/core/Hidden';
 
 import {search_roads, filter_roads,filter_distance,filter_getTop} from '../../../../store/actions/filterRoadAction';
 import communes from '../../../../componentV/Address/Communes';
@@ -68,8 +69,16 @@ const SearchBar = ({onSearch, onFilterPrice, onFilterGetTop, onFilterDistance}) 
         onFilterGetTop(selected.get_top)      
     }, [selected.get_top]);
 
+    function resize() {
+        console.log(window.innerWidth)
+    }
+    
+    React.useEffect(()=> {
+
+    },[window.addEventListener("resize", resize.bind(this))]);
 
     return (
+        
         <Paper className={classes.root}>
             <Typography className={classes.search}>Search</Typography>
             <Select
