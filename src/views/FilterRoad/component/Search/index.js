@@ -8,13 +8,13 @@ import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import arraySort from 'array-sort';
 import {connect} from 'react-redux';
-import Hidden from '@material-ui/core/Hidden';
 
 import {search_roads, filter_roads,filter_distance,filter_getTop} from '../../../../store/actions/filterRoadAction';
 import communes from '../../../../componentV/Address/Communes';
 import districts from '../../../../componentV/Address/Disticts';
 import {useStyles} from './styles';
 import AutoComplete  from '../Multiselect';
+import Grid from '@material-ui/core/Grid';
 
 const SearchBar = ({onSearch, onFilterPrice, onFilterGetTop, onFilterDistance}) => {
     const classes = useStyles();
@@ -22,6 +22,7 @@ const SearchBar = ({onSearch, onFilterPrice, onFilterGetTop, onFilterDistance}) 
         districts, 
         communes
     });
+    const [responesive, setResponesive] = React.useState(true);
     const [selected, setSelected] = React.useState({
         district:'',
         commune:'',
@@ -70,85 +71,251 @@ const SearchBar = ({onSearch, onFilterPrice, onFilterGetTop, onFilterDistance}) 
     }, [selected.get_top]);
 
     function resize() {
-        console.log(window.innerWidth)
+        if( window.innerWidth <= 1440){
+            setResponesive(false);
+        }else{
+            setResponesive(true);
+        }
     }
     
     React.useEffect(()=> {
-
+        console.log('d')
+        if( window.innerWidth <= 1440){
+            setResponesive(false);
+        }else{
+            setResponesive(true);
+        }
     },[window.addEventListener("resize", resize.bind(this))]);
+
 
     return (
         
-        <Paper className={classes.root}>
-            <Typography className={classes.search}>Search</Typography>
-            <Select
-                name="district"
-                value={selected.district}
-                displayEmpty
-                onChange={handleChange}
-                >
-                <MenuItem value="" disabled>Choose District</MenuItem>
-                {districtsList}
-            </Select>
-            <Select
-                name="commune"
-                value={selected.commune}
-                displayEmpty
-                className={classes.margin}
-                onChange={handleChange}
-                >
-                <MenuItem value="" disabled>Choose Communes</MenuItem>
-                {communesList}
-            </Select>
-            <AutoComplete DataSelected={selected.commune}/>
+        <React.Fragment>
+            <Paper className={classes.root}>
+                <Typography className={classes.search}>Search</Typography>
+                <Select
+                    name="district"
+                    value={selected.district}
+                    fullWidth
+                    displayEmpty
+                    onChange={handleChange}
+                    >
+                    <MenuItem value="" disabled>Choose District</MenuItem>
+                    {districtsList}
+                </Select>
+                <Select
+                    name="commune"
+                    value={selected.commune}
+                    fullWidth
+                    displayEmpty
+                    className={classes.margin}
+                    onChange={handleChange}
+                    >
+                    <MenuItem value="" disabled>Choose Communes</MenuItem>
+                    {communesList}
+                </Select>
+                <div style={{width:'1000px'}}>
+                <AutoComplete DataSelected={selected.commune}/>
+                </div>
 
 
-            <IconButton onClick={() => onSearch({
-                address_id:selected.commune == ''? selected.district:selected.commune
-                }) }
-                color="primary">
-                <SearchIcon/>
-            </IconButton>
-            <Divider className={classes.divider} />
-            <Typography className={classes.search}>Filter</Typography>
-            <Select
-                name="price"
-                value={selected.price}
-                displayEmpty
-                className={classes.margin}
-                onChange={handleChange}
-                >
-                <MenuItem value="" disabled>Filter by Price</MenuItem>
-                <MenuItem value="ASC" > Low to High </MenuItem>
-                <MenuItem value="DESC" > High to Low</MenuItem>
-            </Select>
-            <Select
-                name="distance"
-                value={selected.distance}
-                displayEmpty
-                className={classes.margin}
-                onChange={handleChange}
-                >
-                <MenuItem value="" disabled>Filter by Distance</MenuItem>
-                <MenuItem value="ASC" > A-Z </MenuItem>
-                <MenuItem value="DESC" > Z-A </MenuItem>
-            </Select>
-            <Select
-                name="get_top"
-                value={selected.get_top}
-                displayEmpty
-                className={classes.margin}
-                onChange={handleChange}
-                >
-                <MenuItem value="" disabled>Filter by Top</MenuItem>
-                <MenuItem value="5" > Top 5 records</MenuItem>
-                <MenuItem value="10" > Top 10 records</MenuItem>
-                <MenuItem value="15" > Top 15 records</MenuItem>
-                <MenuItem value="25" > Top 25 records</MenuItem>
-                <MenuItem value="50" > Top 50 records</MenuItem>
-                <MenuItem value="100" > Top 100 records</MenuItem>
-            </Select>
-        </Paper>
+                <IconButton onClick={() => onSearch({
+                    address_id:selected.commune == ''? selected.district:selected.commune
+                    }) }
+                    color="primary">
+                    <SearchIcon/>
+                </IconButton>
+
+                { responesive ?
+                <React.Fragment>
+                    <Divider className={classes.divider} />
+                    <Typography className={classes.search}>Filter</Typography>
+                    <Select
+                        name="price"
+                        value={selected.price}
+                        displayEmpty
+                        className={classes.margin}
+                        onChange={handleChange}
+                        >
+                        <MenuItem value="" disabled>Filter by Price</MenuItem>
+                        <MenuItem value="ASC" > Low to High </MenuItem>
+                        <MenuItem value="DESC" > High to Low</MenuItem>
+                    </Select>
+                    <Select
+                        name="distance"
+                        value={selected.distance}
+                        displayEmpty
+                        className={classes.margin}
+                        onChange={handleChange}
+                        >
+                        <MenuItem value="" disabled>Filter by Distance</MenuItem>
+                        <MenuItem value="ASC" > A-Z </MenuItem>
+                        <MenuItem value="DESC" > Z-A </MenuItem>
+                    </Select>
+                    <Select
+                        name="get_top"
+                        value={selected.get_top}
+                        displayEmpty
+                        className={classes.margin}
+                        onChange={handleChange}
+                        >
+                        <MenuItem value="" disabled>Filter by Top</MenuItem>
+                        <MenuItem value="5" > Top 5 records</MenuItem>
+                        <MenuItem value="10" > Top 10 records</MenuItem>
+                        <MenuItem value="15" > Top 15 records</MenuItem>
+                        <MenuItem value="25" > Top 25 records</MenuItem>
+                        <MenuItem value="50" > Top 50 records</MenuItem>
+                        <MenuItem value="100" > Top 100 records</MenuItem>
+                    </Select>
+                </React.Fragment>:''}
+            </Paper>
+            { responesive ? '':
+            <React.Fragment>
+                <Paper className={classes.root}>
+                    <Typography className={classes.search}>Filter</Typography>
+                    <Select
+                        name="price"
+                        fullWidth
+                        value={selected.price}
+                        displayEmpty
+                        className={classes.margin}
+                        onChange={handleChange}
+                        >
+                        <MenuItem value="" disabled>Filter by Price</MenuItem>
+                        <MenuItem value="ASC" > Low to High </MenuItem>
+                        <MenuItem value="DESC" > High to Low</MenuItem>
+                    </Select>
+                    <Select
+                        name="distance"
+                        value={selected.distance}
+                        fullWidth
+                        displayEmpty
+                        className={classes.margin}
+                        onChange={handleChange}
+                        >
+                        <MenuItem value="" disabled>Filter by Distance</MenuItem>
+                        <MenuItem value="ASC" > A-Z </MenuItem>
+                        <MenuItem value="DESC" > Z-A </MenuItem>
+                    </Select>
+                    <Select
+                        name="get_top"
+                        value={selected.get_top}
+                        fullWidth
+                        displayEmpty
+                        className={classes.margin}
+                        onChange={handleChange}
+                        >
+                        <MenuItem value="" disabled>Filter by Top</MenuItem>
+                        <MenuItem value="5" > Top 5 records</MenuItem>
+                        <MenuItem value="10" > Top 10 records</MenuItem>
+                        <MenuItem value="15" > Top 15 records</MenuItem>
+                        <MenuItem value="25" > Top 25 records</MenuItem>
+                        <MenuItem value="50" > Top 50 records</MenuItem>
+                        <MenuItem value="100" > Top 100 records</MenuItem>
+                    </Select>
+                </Paper>
+            </React.Fragment>}
+
+
+
+            <Paper className={classes.root}>
+                <Grid container spacing={3}>
+                    <Grid item xs={1} style={{maxWidth: '6.333333%'}}>
+                        <Typography className={classes.search}>Search</Typography>
+                    </Grid>
+                    <Grid item xs={3}>                        
+                        <Select
+                            name="district"
+                            value={selected.district}
+                            fullWidth
+                            displayEmpty
+                            onChange={handleChange}
+                            >
+                            <MenuItem value="" disabled>Choose District</MenuItem>
+                            {districtsList}
+                        </Select>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Select
+                            name="commune"
+                            value={selected.commune}
+                            fullWidth
+                            displayEmpty
+                            className={classes.margin}
+                            onChange={handleChange}
+                            >
+                            <MenuItem value="" disabled>Choose Communes</MenuItem>
+                            {communesList}
+                        </Select>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <React.Fragment >
+                            <AutoComplete DataSelected={selected.commune}/>
+                        </React.Fragment>
+                    </Grid>
+                    <Grid item xs={1}>
+                        <IconButton onClick={() => onSearch({
+                        address_id:selected.commune == ''? selected.district:selected.commune
+                        }) }
+                        color="primary">
+                        <SearchIcon/>
+                    </IconButton>
+                    </Grid>
+                    <Divider style={{width:'97%', marginLeft:'12px'}}/>
+                    <Grid item xs={1} style={{maxWidth: '5.33333%'}}>
+                    <Typography className={classes.search}>Filter</Typography>
+                    </Grid>
+                    <Grid item xs={4}>                        
+                        <Select
+                            name="price"
+                            value={selected.price}
+                            fullWidth
+                            displayEmpty
+                            className={classes.margin}
+                            onChange={handleChange}
+                            >
+                            <MenuItem value="" disabled>Filter by Price</MenuItem>
+                            <MenuItem value="ASC" > Low to High </MenuItem>
+                            <MenuItem value="DESC" > High to Low</MenuItem>
+                        </Select>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <Select
+                            name="distance"
+                            value={selected.distance}
+                            displayEmpty
+                            fullWidth
+                            className={classes.margin}
+                            onChange={handleChange}
+                            >
+                            <MenuItem value="" disabled>Filter by Distance</MenuItem>
+                            <MenuItem value="ASC" > A-Z </MenuItem>
+                            <MenuItem value="DESC" > Z-A </MenuItem>
+                        </Select>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Select
+                            name="get_top"
+                            value={selected.get_top}
+                            displayEmpty
+                            fullWidth
+                            className={classes.margin}
+                            onChange={handleChange}
+                            >
+                            <MenuItem value="" disabled>Filter by Top</MenuItem>
+                            <MenuItem value="5" > Top 5 records</MenuItem>
+                            <MenuItem value="10" > Top 10 records</MenuItem>
+                            <MenuItem value="15" > Top 15 records</MenuItem>
+                            <MenuItem value="25" > Top 25 records</MenuItem>
+                            <MenuItem value="50" > Top 50 records</MenuItem>
+                            <MenuItem value="100" > Top 100 records</MenuItem>
+                        </Select>
+                    </Grid>
+                </Grid>
+                
+            </Paper>
+        </React.Fragment>
+        
     );
 }
 
